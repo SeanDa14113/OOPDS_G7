@@ -721,94 +721,94 @@ public:
         cpu.setReg(dest_index, static_cast<signed char>(signed_result));
     }
 };
-// 3.6: Increment and Decrement Operations
-// Written by: Chen Chee Chuen
-class INC : public Instruction
+// 3.6: Increment and Decrement Operations                          
+// Written by: Chen Chee Chuen                                      
+class INC : public Instruction  // INC instruction inherits from base Instruction class
 {
 private:
-    int reg;
+    int reg;  // Register index to be incremented
 
 public:
-    INC(int r)
+    INC(int r)  // Constructor receives target register index
     {
-        reg = r;
+        reg = r;  // Store register index
     }
 
-    void execute(CPU& cpu) override
+    void execute(CPU& cpu) override  // Execute INC instruction on CPU
     {
-        int result = cpu.getReg(reg) + 1;
+        int result = cpu.getReg(reg) + 1;  // Increment register value by 1
 
-        // Reset Flags
-        cpu.getFlags()->setOF(false);
-        cpu.getFlags()->setUF(false);
-        cpu.getFlags()->setZF(false);
-        cpu.getFlags()->setCF(false);
+        // Reset Flags // Clear all CPU flags before recalculation
+        cpu.getFlags()->setOF(false);  // Clear overflow flag
+        cpu.getFlags()->setUF(false);  // Clear underflow flag
+        cpu.getFlags()->setZF(false);  // Clear zero flag
+        cpu.getFlags()->setCF(false);  // Clear carry flag
 
-        // Overflow
+        // Overflow  // Check if value exceeds 8-bit signed max
         if(result > 127)
         {
-            cpu.getFlags()->setOF(true);
-            cpu.getFlags()->setCF(true);
+            cpu.getFlags()->setOF(true);  // Set overflow flag
+            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
-        // Underflow
+        // Underflow  // Check if value goes below 8-bit signed min
         if(result < -128)
         {
-            cpu.getFlags()->setUF(true);
-            cpu.getFlags()->setCF(true);
+            cpu.getFlags()->setUF(true);  // Set underflow flag
+            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
-        if((signed char)result == 0)
+        if((signed char)result == 0)  // Check if result is zero after cast to 8-bit signed
         {
-            cpu.getFlags()->setZF(true);
+            cpu.getFlags()->setZF(true);  // Set zero flag
         }
 
-        cpu.setReg(reg, (signed char)result);
+        cpu.setReg(reg, (signed char)result);  // Store final 8-bit result back into register
     }
 };
 
-class DEC : public Instruction
+class DEC : public Instruction  // DEC instruction inherits from base Instruction class
 {
 private:
-    int reg;
+    int reg;  // Register index to be decremented
 
 public:
-    DEC(int r)
+    DEC(int r)  // Constructor receives target register index
     {
-        reg = r;
+        reg = r;  // Store register index
     }
 
-    void execute(CPU& cpu) override
+    void execute(CPU& cpu) override  // Execute DEC instruction on CPU
     {
-        int result = cpu.getReg(reg) - 1;
+        int result = cpu.getReg(reg) - 1;  // Decrement register value by 1
 
-        // Reset Flags
-        cpu.getFlags()->setOF(false);
-        cpu.getFlags()->setUF(false);
-        cpu.getFlags()->setZF(false);
-        cpu.getFlags()->setCF(false);
+        // Reset Flags // Clear all CPU flags before recalculation
+        cpu.getFlags()->setOF(false);  // Clear overflow flag
+        cpu.getFlags()->setUF(false);  // Clear underflow flag
+        cpu.getFlags()->setZF(false);  // Clear zero flag
+        cpu.getFlags()->setCF(false);  // Clear carry flag
 
-        // Overflow
+        // Overflow  // Check if value exceeds 8-bit signed max
         if(result > 127)
         {
-            cpu.getFlags()->setOF(true);
-            cpu.getFlags()->setCF(true);
+            cpu.getFlags()->setOF(true);  // Set overflow flag
+            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
-        // Underflow
+        // Underflow  // Check if value goes below 8-bit signed min
         if(result < -128)
         {
-            cpu.getFlags()->setUF(true);
-            cpu.getFlags()->setCF(true);
+            cpu.getFlags()->setUF(true);  // Set underflow flag
+            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
-        // Zero Flag
+        // Zero Flag  // Check if result equals zero
         if((signed char)result == 0)
         {
-            cpu.getFlags()->setZF(true);
+            cpu.getFlags()->setZF(true);  // Set zero flag
         }
 
-        cpu.setReg(reg, (signed char)result);
+        cpu.setReg(reg, (signed char)result);  // Store final 8-bit result back into register
     }
 };
 
@@ -944,108 +944,110 @@ public:
 
 
 
-// 3.10: Load and Store Operations
-// Written by: Chen Chee Chuen
-class LOAD : public Instruction  //Direct LOAD // LOAD R1, [20]
+// 3.10: Load and Store Operations                               
+// Written by: Chen Chee Chuen                                   
+
+class LOAD : public Instruction  // Direct LOAD // LOAD R1, [20]  // Load value from memory address into register
 {
 private:
-    int reg;
-    int address;
+    int reg;  // Destination register
+    int address;  // Memory address to read from
+
 public:
-    LOAD(int r, int addr)
+    LOAD(int r, int addr)  // Constructor for direct load
     {
-        reg = r;
-        address = addr;
+        reg = r;  // Store destination register
+        address = addr;  // Store memory address
     }
 
-    void execute(CPU& cpu)override
+    void execute(CPU& cpu) override  // Execute LOAD instruction
     {
-        if(address < 0 || address >= 64)
+        if(address < 0 || address >= 64)  // Check memory bounds (64-byte memory)
         {
-            std::cout << "Memory Error" << std::endl;
-            return;
+            std::cout << "Memory Error" << std::endl;  // Print error if invalid address
+            return;  // Abort execution
         }
 
-        cpu.setReg(reg, cpu.readMemory(address));
+        cpu.setReg(reg, cpu.readMemory(address));  // Load memory value into register
     }
 };
 
-class STORE : public Instruction  // Direct STORE
+class STORE : public Instruction  // Direct STORE  // Store register value into memory address
 {
 private:
-    int reg;
-    int address;
+    int reg;  // Source register
+    int address;  // Memory address to write to
 
 public:
-    STORE(int r, int addr)
+    STORE(int r, int addr)  // Constructor for direct store
     {
-        reg = r;
-        address = addr;
+        reg = r;  // Store source register
+        address = addr;  // Store memory address
     }
 
-    void execute(CPU& cpu) override
+    void execute(CPU& cpu) override  // Execute STORE instruction
     {
-        if(address < 0 || address >= 64)
+        if(address < 0 || address >= 64)  // Check memory bounds
         {
-            std::cout << "Memory Error" << std::endl;
-            return;
+            std::cout << "Memory Error" << std::endl;  // Print error if invalid address
+            return;  // Abort execution
         }
 
-        cpu.writeMemory(address, cpu.getReg(reg));
+        cpu.writeMemory(address, cpu.getReg(reg));  // Store register value into memory
     }
 };
 
-class LOAD_INDIRECT : public Instruction  // Indirect load  // LOAD R1, [R2]
+class LOAD_INDIRECT : public Instruction  // Indirect load  // LOAD R1, [R2] (address stored in register)
 {
 private:
-    int destReg;
-    int addrReg;
+    int destReg;  // Destination register
+    int addrReg;  // Register holding memory address
 
 public:
-    LOAD_INDIRECT(int d, int a)
+    LOAD_INDIRECT(int d, int a)  // Constructor for indirect load
     {
-        destReg = d;
-        addrReg = a;
+        destReg = d;  // Store destination register
+        addrReg = a;  // Store address register
     }
 
-    void execute(CPU& cpu) override
+    void execute(CPU& cpu) override  // Execute indirect LOAD
     {
-        int address = cpu.getReg(addrReg);
+        int address = cpu.getReg(addrReg);  // Get address from register
 
-        if(address < 0 || address >= 64)
+        if(address < 0 || address >= 64)  // Validate memory address
         {
-            std::cout << "Memory Error" << std::endl;
-            return;
+            std::cout << "Memory Error" << std::endl;  // Print error
+            return;  // Stop execution
         }
 
-        cpu.setReg(destReg, cpu.readMemory(address));
+        cpu.setReg(destReg, cpu.readMemory(address));  // Load memory value into destination register
     }
 };
 
-class STORE_INDIRECT : public Instruction  // Indirect store
+class STORE_INDIRECT : public Instruction  // Indirect store  
 {
 private:
-    int addrReg;
-    int sourceReg;
+    int addrReg;  // Register holding memory address
+    int sourceReg;  // Register containing data to store
 
 public:
-    STORE_INDIRECT(int s, int a)
+    STORE_INDIRECT(int s, int a)  // Constructor for indirect store
     {
-        addrReg = a;
-        sourceReg = s;
+        addrReg = a;  // Store address register
+        sourceReg = s;  // Store source register
     }
 
-    void execute(CPU& cpu) override
+    void execute(CPU& cpu) override  // Execute indirect STORE
     {
-        int address = cpu.getReg(addrReg);
+        int address = cpu.getReg(addrReg);  // Get address from register
 
-        if(address < 0 || address >= 64)
+        if(address < 0 || address >= 64)  // Check memory bounds
         {
-            std::cout << "Memory Error" << std::endl;
-            return;
+            std::cout << "Memory Error" << std::endl;  // Print error
+            return;  // Abort execution
         }
 
-        cpu.writeMemory(address, cpu.getReg(sourceReg));
+        cpu.writeMemory(address, cpu.getReg(sourceReg));  // Store register value into memory
     }
 };
 
