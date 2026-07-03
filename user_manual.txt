@@ -4,7 +4,7 @@ VIRTUAL MACHINE INTERPRETER - USER MANUAL & COMPILATION GUIDE
 Course: CCP6124 Object-oriented Programming and Data Structures
 Trimester: 2610
 Assignment Deliverable: Section 7.1 User Manual
-Target File: TT01_G01.cpp
+Target File: TT8L_G7.cpp
 
 This manual provides explicit instructions for lecturers and evaluators
 to compile and execute the our Virtual Machine and Assembly Language Interpreter
@@ -21,10 +21,10 @@ Before running any commands, ensure your folder structure matches the official
 submission layout exactly. The compiled executable must be built within the 
 unzipped group folder:
 
-TT01_G01/
-├── TT01_G01.cpp      <- Single source file containing all implementation
-├── TT01_G01.pdf      <- Architecture and algorithms report
-├── TT01_G01.mpeg     <- Individual contribution video presentation
+TT8L_G7/
+├── TT8L_G7.cpp      <- Single source file containing all implementation
+├── TT8L_G7.pdf      <- Architecture and algorithms report
+├── TT8L_G7.mpeg     <- Individual contribution video presentation
 └── program.asm       <- Your assembly program input file (Example)
 
 ------------------------------------------------------------------------
@@ -34,18 +34,18 @@ TT01_G01/
 A. LINUX (ARCH / UBUNTU)
    1. Open your terminal application.
    2. Navigate into the project folder:
-      cd /path/to/folder/TT01_G01
+      cd /path/to/folder/TT8L_G7
    3. Compile using the universally supported C++11 standard via g++:
-      g++ TT01_G01.cpp -o virtual_machine
+      g++ TT8L_G7.cpp -o virtual_machine
    4. Execute by passing the assembly program path as a command-line argument:
       ./virtual_machine program.asm
 
 B. WINDOWS (MSYS2 / MINGW / POWERSHELL / CMD)
    1. Open PowerShell or Command Prompt.
    2. Navigate into the project folder:
-      cd C:\path\to\folder\TT01_G01
+      cd C:\path\to\folder\TT8L_G7
    3. Compile using the g++ compiler executable to produce a native Windows binary:
-      g++ TT01_G01.cpp -o virtual_machine.exe
+      g++ TT8L_G7.cpp -o virtual_machine.exe
    4. Execute by passing the target assembly file:
       .\virtual_machine.exe program.asm
 
@@ -53,9 +53,9 @@ C. macOS (APPLE CLANG / TERMINAL)
    *Note: For desktop evaluation environments, macOS Terminal is utilized.*
    1. Open the Terminal app.
    2. Navigate into the project folder:
-      cd /path/to/folder/TT01_G01
+      cd /path/to/folder/TT8L_G&
    3. Compile using the native clang++ / g++ frontend compiler:
-      g++ TT01_G01.cpp -o virtual_machine
+      g++ TT8L_G7.cpp -o virtual_machine
    4. Execute the resulting binary with the input program:
       ./virtual_machine program.asm
 

@@ -3,6 +3,6 @@
 *.exe
 TT8L_G7
 *.pdf
-.asm
+*.asm
 virtual_machine
 *_result.txt
