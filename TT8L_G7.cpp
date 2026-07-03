@@ -391,23 +391,23 @@ public:
 };
 
 //2.5 CPU
-//Written By Tan Khai YU / Wong Haw Jack
+//Written by: Wong Haw Jack
 class CPU {
 private:
-    GeneralRegister r[8];
-    Memory cpu_memory;
+    GeneralRegister r[8]; // We create an array to store 8 register and access the register using index 0-7
+    Memory cpu_memory; // Main 64-byte memory.
 
-    FlagRegister* ptr_flag = new FlagRegister();
-    ProgramCounter pc;
-    MyStack stack;
-    StackIndexRegister stack_index;
+    FlagRegister* ptr_flag = new FlagRegister(); // Flag register aggregated by CPU.
+    ProgramCounter pc; // CPU Program counter
+    MyStack stack; // CPU stack
+    StackIndexRegister stack_index; // Incremented when items are pushed, decremented when an item is popped from the stack.
 
 public:
     CPU() : stack_index() {}
 
     ~CPU() {delete ptr_flag;}
 
-    signed char readMemory(int address)
+    signed char readMemory(int address) // Accessor for getting data from
     {
         return cpu_memory.read(address);
     }
@@ -445,7 +445,6 @@ public:
         stack_index.pop();
         return stack.pop();
     }
-
     unsigned char getPC() const { return pc.getValue(); } // Function for getting data in program counter.
     void incrementPC() { pc.increment(); } // Function for update program counter.
     void setPC(unsigned char val) { pc.setValue(val); } // Function for setting program counter.
@@ -469,25 +468,16 @@ public:
 // 3.2: Input Operations
 // 3.3: Output Operations
 // Written by: Wong Haw Jack
-class IOInstruction: public Instruction
+class IOInstruction: public Instruction //Base Class for INPUT and OUTPUT.
 {
 public:
-    int register_index;
+    int register_index; // Store the target register index
 };
 
 class Input: public IOInstruction
 {
-    /***
-    When executed, your interpreter must print a single '?' character at the start of a new line to signal it is waiting for user input.
-    Input Validation: You must handle bounds validation manually.
-    If the user types a value outside the signed 8-bit range (<-128 or >127), your logic must catch it and explicitly
-    flip the Underflow Flag (UF) or Overflow Flag (OF) in the CPU.
-    The Zero Flag (ZF): Pay very close attention to the requirement for the Zero Flag,
-    If the input has an ASCII code equal to 0, the ZF flag must be set to true.
-    ***/
-
 public:
-    Input(int r)
+    Input(int r) // Constructor: store the target register.
     {
         register_index = r;
     }
@@ -495,8 +485,9 @@ public:
     {
         int input;
         std::cout << "?" << std::endl;
-        std::cin >> input;
-        cpu.setReg(register_index, static_cast<signed char>(input));
+        std::cin >> input; // Get the integer from user
+        cpu.setReg(register_index, static_cast<signed char>(input)); // Static cast the integer to signed char.
+        // Update the flag. If user input > 127, it is overflow. If < -128, it is underflow. If == 0 then zero flag is raise.
         if(input > 127) {cpu.getFlags()->setOF(true);}
         else if(input < -128) {cpu.getFlags()->setUF(true);}
         else if(input == 0) {cpu.getFlags()->setZF(true);}
@@ -507,13 +498,13 @@ public:
 class Display: public IOInstruction
 {
 public:
-    Display(int r)
+    Display(int r) // Constructor to store the target register.
     {
         register_index = r;
     }
     void execute(CPU& cpu) override
     {
-        std::cout << int(cpu.getReg(register_index)) << endl;
+        std::cout << int(cpu.getReg(register_index)) << endl; // Display the target register value.
     }
 };
 // 3.4: MOV Operations
@@ -587,15 +578,14 @@ public:
 };
 // 3.5: Arithmetic Operations
 // Written by: Wong Haw Jack
-class Arithmetic: public Instruction
+class Arithmetic: public Instruction // Base class for ADD, SUB, MUL and DIV.
 {
 private:
-    int source_reg;
-    int destination_reg;
-
+    int source_reg; // Store the data of source register index.
+    int destination_reg; // Store the data of destination index
 public:
-    Arithmetic(int d, int s): destination_reg(d), source_reg(s){}
-
+    Arithmetic(int d, int s): destination_reg(d), source_reg(s){} //Constructor to initialize the data when any arithmetic instruction run.
+    // Accessor of the source and destination register.
     int get_source_reg() const {return source_reg;}
     int get_destination_reg() const {return destination_reg;}
 };
@@ -603,29 +593,32 @@ public:
 class ADD: public Arithmetic
 {
 public:
-    ADD(int d, int s): Arithmetic(d, s){}
+    ADD(int d, int s): Arithmetic(d, s){} // When the instruction is run, the input is automatically pass to the Arithmetic constructor.
 
     void execute(CPU& cpu)
     {
-        int dest_index = get_destination_reg(); //Get the index of the register.
+        //First, we access the arithmetic destination and source index.
+        int dest_index = get_destination_reg();
         int source_index = get_source_reg();
-
-        signed char source_value = cpu.getReg(source_index); //Get the value through cpu member function
+        //Then, we get the value from the cpu register using the destination and source index.
+        signed char source_value = cpu.getReg(source_index);
         signed char dest_value = cpu.getReg(dest_index);
-
-        signed char signed_result = static_cast<signed char>(source_value + dest_value); // Cast operands to unsigned values first, then store their sum inside a wider 32-bit int
-
+        // Then we get the signed char result by adding them together.
+        // Although source_value and dest_value is signed char, when we do addition, it will become int.
+        // So here static_cast the result to signed char again.
+        signed char signed_result = static_cast<signed char>(source_value + dest_value);
+        //Convert from signed char to unsigned char, then convert to int and add it up.
+        //If the number higher than 255, then carry bit occur.
         int unsigned_result = static_cast<int>(static_cast<unsigned char>(source_value)) +
-                   static_cast<int>(static_cast<unsigned char>(dest_value)); //Convert from signed char to unsigned char, then convert to int and add it up.
-                   //If the number higher than 255, then carry bit occur.
-
+                   static_cast<int>(static_cast<unsigned char>(dest_value));
         bool overflowOccurred = (source_value > 0 && dest_value > 0 && signed_result < 0); //Addition of two positive number resultant negative means overflow occur.
         bool underflowOccurred = (source_value < 0 && dest_value < 0 && signed_result >= 0); //Addition of two negative number resultant positive means underflow occur.
-
+        //Update the flag accordingly
         cpu.getFlags()->setCF(unsigned_result > 255);
         cpu.getFlags()->setUF(underflowOccurred);
         cpu.getFlags()->setOF(overflowOccurred);
         cpu.getFlags()->setZF(signed_result == 0);
+        //Update the destination value at the end.
         cpu.setReg(dest_index, static_cast<signed char>(signed_result));
     }
 };
@@ -633,28 +626,32 @@ public:
 class SUB: public Arithmetic
 {
 public:
+    // When the instruction is run, the input is automatically pass to the Arithmetic constructor.
     SUB(int d, int s): Arithmetic(d, s){}
-
     void execute(CPU& cpu)
     {
+        //First, we access the arithmetic destination and source index.
         int source_index = get_source_reg(); //Get the index of the register.
         int dest_index = get_destination_reg();
-
+        //Then, we get the value from the cpu register using the destination and source index.
         signed char source_value = cpu.getReg(source_index); //Get the value through cpu member function
         signed char dest_value = cpu.getReg(dest_index);
-
-        signed char signed_result = static_cast<signed char>(dest_value - source_value); // Cast operands to unsigned values first, then store their subtract inside a wider 32-bit int
-
+        // Then we get the signed char result by adding them together.
+        // Although source_value and dest_value is signed char, when we do addition, it will become int.
+        // So here static_cast the result to signed char again.
+        signed char signed_result = static_cast<signed char>(dest_value - source_value);
+        //Convert from signed char to unsigned char, then convert to int and add it up.
         int unsigned_result = static_cast<int>(static_cast<unsigned char>(dest_value)) - static_cast<int>(static_cast<unsigned char>(source_value));
-
+        int unsigned_source = static_cast<int>(static_cast<unsigned char>(source_value));
         bool overflowOccurred = (dest_value > 0 && source_value < 0 && signed_result < 0); //Subtraction of two positive number resultant positive means overflow occur.
         bool underflowOccurred = (dest_value < 0 && source_value > 0 && signed_result >= 0); //Subtraction of two positive number resultant negative means underflow occur.
-
-        cpu.getFlags()->setCF(unsigned_result > 255);
+        bool carryOccured = (unsigned_result < unsigned_source); // Carry flag is raise when unsigned_result < unsigned source.
+        //Update the flag accordingly
+        cpu.getFlags()->setCF(carryOccured);
         cpu.getFlags()->setUF(underflowOccurred);
         cpu.getFlags()->setOF(overflowOccurred);
         cpu.getFlags()->setZF(signed_result == 0);
-
+        //Update the destination value at the end.
         cpu.setReg(dest_index, static_cast<signed char>(signed_result));
     }
 };
@@ -798,12 +795,12 @@ public:
 
 // 3.7: ROL Operations
 // 3.8: ROR Operations
-// Written by Jack Wong
-class Rotate : public Instruction
+// Written by Wong Haw Jack
+class Rotate : public Instruction // Base class for both rotate left and rotate right.
 {
 private:
-    int destination_reg;
-    int count;
+    int destination_reg; // Private member to store the data of destination register.
+    int count; // Private member to store the data of count.
 
 public:
     Rotate(int d, int c)
@@ -811,7 +808,7 @@ public:
         destination_reg = d;
         count = c;
     }
-
+    // Accessor function
     int get_dest_reg() const {return destination_reg;}
     int get_count() const {return count;}
 };
@@ -825,22 +822,30 @@ public:
     {
         int destination_index = get_dest_reg();
         int count = get_count();
-
+        //Modulo 8 to wrap around the input between 0-7.
+        //example: input = 20, 20 % 8 = 4. Rotate left 4.
         count %= 8;
-
+        //To perform rotate, we need to cast the the signed char to unsigned char first.
         signed char signed_before_ro = cpu.getReg(destination_index);
         unsigned char unsigned_before_ro = static_cast<unsigned char>(signed_before_ro);
 
         unsigned char unsigned_after_ro = 0;
-        if (count == 0)
+        if (count == 0) //If count == 0, there is no rotation. The target value remain unchanged.
         {
             unsigned_after_ro = unsigned_before_ro;
         }
         else
         {
+            //Else, it will perform the rotate.
+            //example: 1011 0100 -> 0100 1011 (rotate 4)
+            //First, shift the unsigned bit to the left by count = 4. 1011 0100 -> 0100 0000
+            //Then, shift the unsigned bit to the right by 8 - count. 8 - 4 = 4.
+            // 1011 0100 -> 0000 1011
+            // Lastly, adding up together by using 'OR'
+            // 0100 0000 or 0000 1011 -> 0100 1011
             unsigned_after_ro = (unsigned_before_ro << count) | (unsigned_before_ro >> (8 - count));
         }
-        signed char signed_after_ro = static_cast<signed char>(unsigned_after_ro);
+        signed char signed_after_ro = static_cast<signed char>(unsigned_after_ro); //Finally, cast it back to signed char.
 
         cpu.setReg(destination_index, signed_after_ro);
 
@@ -869,6 +874,7 @@ public:
         }
         else
         {
+            //Same operation with rotate right it just shift right first, then shift left.
             unsigned_after_ro = (unsigned_before_ro >> count) | (unsigned_before_ro << (8 - count));
         }
         signed char signed_after_ro = static_cast<signed char>(unsigned_after_ro);
