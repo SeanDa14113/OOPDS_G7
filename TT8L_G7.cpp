@@ -674,7 +674,7 @@ public:
         int unsigned_result = static_cast<int>(static_cast<unsigned char>(dest_value)) * static_cast<int>(static_cast<unsigned char>(source_value));
 
         bool overflowOccurred = (int(dest_value) * int(source_value) > 127); //In byte, any multiplication make number larger than 127. it is overflow.
-        bool underflowOccurred = (int(dest_value) * int(source_value) <= -128); //else, it is underflow.
+        bool underflowOccurred = (int(dest_value) * int(source_value) < -128); //else, it is underflow.
 
         cpu.getFlags()->setCF(unsigned_result > 255);
         cpu.getFlags()->setUF(underflowOccurred);
