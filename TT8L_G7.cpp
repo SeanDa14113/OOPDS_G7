@@ -738,24 +738,16 @@ public:
     {
         int result = cpu.getReg(reg) + 1;  // Increment register value by 1
 
-        // Reset Flags // Clear all CPU flags before recalculation
-        cpu.getFlags()->setOF(false);  // Clear overflow flag
-        cpu.getFlags()->setUF(false);  // Clear underflow flag
-        cpu.getFlags()->setZF(false);  // Clear zero flag
-        cpu.getFlags()->setCF(false);  // Clear carry flag
-
         // Overflow  // Check if value exceeds 8-bit signed max
         if(result > 127)
         {
             cpu.getFlags()->setOF(true);  // Set overflow flag
-            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
         // Underflow  // Check if value goes below 8-bit signed min
         if(result < -128)
         {
             cpu.getFlags()->setUF(true);  // Set underflow flag
-            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
         if((signed char)result == 0)  // Check if result is zero after cast to 8-bit signed
@@ -782,24 +774,16 @@ public:
     {
         int result = cpu.getReg(reg) - 1;  // Decrement register value by 1
 
-        // Reset Flags // Clear all CPU flags before recalculation
-        cpu.getFlags()->setOF(false);  // Clear overflow flag
-        cpu.getFlags()->setUF(false);  // Clear underflow flag
-        cpu.getFlags()->setZF(false);  // Clear zero flag
-        cpu.getFlags()->setCF(false);  // Clear carry flag
-
         // Overflow  // Check if value exceeds 8-bit signed max
         if(result > 127)
         {
             cpu.getFlags()->setOF(true);  // Set overflow flag
-            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
         // Underflow  // Check if value goes below 8-bit signed min
         if(result < -128)
         {
             cpu.getFlags()->setUF(true);  // Set underflow flag
-            cpu.getFlags()->setCF(true);  // Set carry flag
         }
 
         // Zero Flag  // Check if result equals zero
