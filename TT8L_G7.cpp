@@ -525,6 +525,7 @@ public:
         destination = dest;
         number = num;
         source = 0;
+
     }
 
     // Mode 1: MOV R1, R0 (Copies the value stored in the source register to the destination register)
@@ -552,9 +553,6 @@ public:
         {
             case 0:
                 cpu.setReg(destination, number);
-                cpu.getFlags()->setOF(number > 127);
-                cpu.getFlags()->setUF(number < -128);
-                cpu.getFlags()->setZF(number == 0);
                 break;
             case 1:
                 cpu.setReg(destination, cpu.getReg(source));
@@ -568,7 +566,7 @@ public:
                         cpu.setReg(destination, cpu.readMemory(address));
                         cpu.getFlags()->setOF(number > 127);
                         cpu.getFlags()->setUF(number < -128);
-                        cpu.getFlags()->setOF(number == 0);
+                        cpu.getFlags()->setZF(number == 0);
                     }
                     else
                     {
@@ -1203,6 +1201,7 @@ public:
             if (opcode == "POP")     return new POP(args[1] - '0');
             if (opcode == "INC")     return new INC(args[1] - '0');
             if (opcode == "DEC")     return new DEC(args[1] - '0');
+            if (opcode == "RESET")   return new RESET(args[0]);
 
             if (opcode == "PUSH") {
                 if (args[0] == 'R') return new PUSH(args[1] - '0');
