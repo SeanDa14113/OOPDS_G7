@@ -552,6 +552,9 @@ public:
         {
             case 0:
                 cpu.setReg(destination, number);
+                cpu.getFlags()->setOF(number > 127);
+                cpu.getFlags()->setUF(number < -128);
+                cpu.getFlags()->setOF(number == 0);
                 break;
             case 1:
                 cpu.setReg(destination, cpu.getReg(source));
@@ -563,6 +566,9 @@ public:
                     if (address >= 0 && address < 64)
                     {
                         cpu.setReg(destination, cpu.readMemory(address));
+                        cpu.getFlags()->setOF(number > 127);
+                        cpu.getFlags()->setUF(number < -128);
+                        cpu.getFlags()->setOF(number == 0);
                     }
                     else
                     {
