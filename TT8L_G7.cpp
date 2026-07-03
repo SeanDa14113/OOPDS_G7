@@ -554,7 +554,7 @@ public:
                 cpu.setReg(destination, number);
                 cpu.getFlags()->setOF(number > 127);
                 cpu.getFlags()->setUF(number < -128);
-                cpu.getFlags()->setOF(number == 0);
+                cpu.getFlags()->setZF(number == 0);
                 break;
             case 1:
                 cpu.setReg(destination, cpu.getReg(source));
