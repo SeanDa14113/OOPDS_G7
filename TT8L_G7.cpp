@@ -515,11 +515,11 @@ private:
     int mov_mode; // MOV mode (0: R1,10 / 1: R1,R0 / 2: R1,[R2])
     int destination;
     int source;
-    signed char number;
+    int number;
 
 public:
 
-    MovOperation(int dest, signed char num)
+    MovOperation(int dest, int num, char modeType)
     {
         mov_mode = 0;
         destination = dest;
@@ -552,8 +552,14 @@ public:
         switch(mov_mode)
         {
             case 0:
-                cpu.setReg(destination, number);
+            {   
+                cpu.getFlags()->setOF(number > 127);
+                cpu.getFlags()->setUF(number < -128);
+                cpu.getFlags()->setZF(number == 0);
+                signed char value = static_cast<signed char>(number);
+                cpu.setReg(destination, value);
                 break;
+            }
             case 1:
                 cpu.setReg(destination, cpu.getReg(source));
                 break;
@@ -1227,10 +1233,10 @@ public:
         if (opcode == "SHR")   return new SftOperation(first[1] - '0', stoi(second), 1);
 
         if (opcode == "MOV") {
-            //cout << first << " " << second << endl;
+            cout << first << " " << second << endl;
             if (second[0] == 'R') return new MovOperation(first[1] - '0', second[1] - '0');
             if (second[0] == '[') return new MovOperation(first[1] - '0', second[2] - '0', 0);
-            return new MovOperation(first[1] - '0', (signed char)stoi(second));
+            return new MovOperation(first[1] - '0', stoi(second), 'C');
         }
 
         if (opcode == "LOAD")
