@@ -1,4 +1,8 @@
 # Ignore object file
 *.o
 *.exe
-Project
+TT8L_G7
+*.pdf
+*.asm
+virtual_machine
+*_result.txt

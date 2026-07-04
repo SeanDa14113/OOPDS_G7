@@ -1,0 +1,76 @@
+========================================================================
+VIRTUAL MACHINE INTERPRETER - USER MANUAL & COMPILATION GUIDE
+========================================================================
+Course: CCP6124 Object-oriented Programming and Data Structures
+Trimester: 2610
+Assignment Deliverable: Section 7.1 User Manual
+Target File: TT8L_G7.cpp
+
+This manual provides explicit instructions for lecturers and evaluators
+to compile and execute the our Virtual Machine and Assembly Language Interpreter
+from the command line interface across Windows, macOS, and Linux systems.
+
+To ensure strict compliance with legacy configurations and minimize dependency
+conflicts, the compilation instructions utilize universally compatible standard
+flags (C++11 baseline).
+
+------------------------------------------------------------------------
+1. PROJECT DIRECTORY AND FILE STRUCTURE
+------------------------------------------------------------------------
+Before running any commands, ensure your folder structure matches the official 
+submission layout exactly. The compiled executable must be built within the 
+unzipped group folder:
+
+TT8L_G7/
+├── TT8L_G7.cpp      <- Single source file containing all implementation
+├── TT8L_G7.pdf      <- Architecture and algorithms report
+├── TT8L_G7.mpeg     <- Individual contribution video presentation
+└── program.asm       <- Your assembly program input file (Example)
+
+------------------------------------------------------------------------
+2. COMMAND LINE COMPILATION BY OPERATING SYSTEM
+------------------------------------------------------------------------
+
+A. LINUX (ARCH / UBUNTU)
+   1. Open your terminal application.
+   2. Navigate into the project folder:
+      cd /path/to/folder/TT8L_G7
+   3. Compile using the universally supported C++11 standard via g++:
+      g++ TT8L_G7.cpp -o virtual_machine
+   4. Execute by passing the assembly program path as a command-line argument:
+      ./virtual_machine program.asm
+
+B. WINDOWS (MSYS2 / MINGW / POWERSHELL / CMD)
+   1. Open PowerShell or Command Prompt.
+   2. Navigate into the project folder:
+      cd C:\path\to\folder\TT8L_G7
+   3. Compile using the g++ compiler executable to produce a native Windows binary:
+      g++ TT8L_G7.cpp -o virtual_machine.exe
+   4. Execute by passing the target assembly file:
+      .\virtual_machine.exe program.asm
+
+C. macOS (APPLE CLANG / TERMINAL)
+   *Note: For desktop evaluation environments, macOS Terminal is utilized.*
+   1. Open the Terminal app.
+   2. Navigate into the project folder:
+      cd /path/to/folder/TT8L_G&
+   3. Compile using the native clang++ / g++ frontend compiler:
+      g++ TT8L_G7.cpp -o virtual_machine
+   4. Execute the resulting binary with the input program:
+      ./virtual_machine program.asm
+
+------------------------------------------------------------------------
+3. CONSOLE RUNTIME CONTROLS & ARGUMENT HANDLING
+------------------------------------------------------------------------
+- Argument Parsing: The binary accepts the relative or absolute file path of 
+  a valid ".asm" script as its first console parameter (argv[1]).
+  
+- Input Prompts: When the interpreter executes an 'INPUT <Register>' instruction,
+  a '?' character will display at the start of a new line. Type a valid 
+  signed integer integer value within the range [-128, 127] and press Enter.
+  
+- State Dump Output: Upon hitting completion boundaries, the system will clear 
+  buffers, dump formatted string buffers to the screen, and write the identical 
+  formatted structural blocks directly into an output summary file.
+
+========================================================================
